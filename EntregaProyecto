@@ -1,0 +1,76 @@
+# Programación de Computadores (2023-II)
+# María Paula Villarraga Díaz
+
+import matplotlib.pyplot as plt
+
+def cargar_diccionario_sentimientos():
+    diccionario_sentimientos = {
+        'justicia': 1,
+        'igualdad': 1,
+        'derecho': 1,
+        'libertad': 1,
+        'transparencia': 1,
+        'democracia': 1,
+        'solidaridad': 1,
+        'legalidad': 1,
+        'injusticia': -1,
+        'discriminación': -1,
+        'menoscabo': -1,
+        'perjudicado': -1,
+        'abuso': -1,
+        'acusada': -1,
+        'desigualdad': -1,
+        'arbitrariedad': -1,
+        'inseguridad': -1,
+        'normativa': 0,
+        'jurisprudencia': 0,
+        'procedimiento': 0,
+        'corte': 0,
+        'recurso': 0,
+        'veredicto': 0,
+        'caso': 0,
+    }
+    return diccionario_sentimientos
+
+def inicializar_puntajes():
+    return {'Positiva': 0, 'Negativa': 0, 'Neutral': 0}
+
+def analizar_sentimientos_en_archivo(archivo_contenido, diccionario_sentimientos):
+    puntajes = inicializar_puntajes()
+
+    for linea in archivo_contenido.split('\n'):
+        puntaje = sum(diccionario_sentimientos.get(palabra, 0) for palabra in linea.lower().split())
+        puntajes['Positiva'] += max(0, puntaje)
+        puntajes['Negativa'] += max(0, -puntaje)
+        puntajes['Neutral'] += max(0, 1 if puntaje == 0 else 0)
+    return puntajes
+
+def determinar_sentimiento_general(puntajes):
+    return max(puntajes, key=puntajes.get)
+
+def generar_visualizacion(puntajes):
+    etiquetas = ['Positiva', 'Negativa', 'Neutral']
+    valores = [puntajes['Positiva'], puntajes['Negativa'], puntajes['Neutral']]
+
+    plt.figure(figsize=(8, 6))
+    plt.bar(etiquetas, valores, color=['green', 'red', 'blue'])
+    plt.title('Análisis de sentimientos')
+    plt.xlabel('Categoría de sentimientos')
+    plt.ylabel('Número de asociados')
+    plt.show()
+
+def leerprovidencia():
+    with open('SentenciaC09202.txt', encoding='utf-8') as reader:
+        archivo_contenido = reader.read()
+        puntajes = analizar_sentimientos_en_archivo(archivo_contenido, diccionario_sentimientos)
+        print(f"Puntaje positivo acumulado: {puntajes['Positiva']}")
+        print(f"Puntaje negativo acumulado: {puntajes['Negativa']}")
+        print(f"Puntaje neutral acumulado: {puntajes['Neutral']}")
+
+        resultado_sentimiento_general = determinar_sentimiento_general(puntajes)
+        print(f"El sentimiento general de la providencia es: {resultado_sentimiento_general}")
+
+        generar_visualizacion(puntajes)
+
+diccionario_sentimientos = cargar_diccionario_sentimientos()
+leerprovidencia()
